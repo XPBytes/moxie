@@ -1,0 +1,33 @@
+{
+  "name": "@xpbytes/moxie",
+  "version": "1.0.0",
+  "description": "Proxy based mock for node and v8",
+  "main": "dist/moxie.js",
+  "umd:main": "dist/moxie.umd.js",
+  "module": "dist/moxie.mjs",
+  "source": "moxie.js",
+  "repository": "https://xpbytes.com/moxie",
+  "author": "Derk-Jan Karrenbeld <derk-jan@xpbytes.com>",
+  "license": "MIT",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "/dist",
+    "moxie.js"
+  ],
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch",
+    "test": "ava"
+  },
+  "devDependencies": {
+    "ava": "^1.2.1",
+    "esm": "^3.2.4",
+    "microbundle": "^0.9.0"
+  },
+  "ava": {
+    "require": [
+      "esm"
+    ]
+  }
+}
