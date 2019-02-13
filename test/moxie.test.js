@@ -1,5 +1,5 @@
 import test from 'ava'
-import createMock from '../moxie'
+import createMock from '../dist/moxie'
 
 const PROPERTIES = Object.getOwnPropertyNames(Object.getPrototypeOf(createMock()))
 
@@ -7,7 +7,7 @@ test('mocks can expect', (t) => {
   const mock = createMock()
   t.not(PROPERTIES.indexOf('expect'), -1)
   t.true(typeof mock.expect === 'function')
-  t.is(mock.expect.length, 2)
+  t.true(mock.expect.length >= 2 && mock.expect.length <= 4)
 })
 
 test('mocks can verify', (t) => {

@@ -5,7 +5,7 @@
   "main": "dist/moxie.js",
   "umd:main": "dist/moxie.umd.js",
   "module": "dist/moxie.mjs",
-  "source": "moxie.js",
+  "source": "moxie.ts",
   "repository": "https://xpbytes.com/moxie",
   "author": "Derk-Jan Karrenbeld <derk-jan@xpbytes.com>",
   "license": "MIT",
@@ -13,11 +13,12 @@
     "README.md",
     "LICENSE",
     "/dist",
-    "moxie.js"
+    "moxie.ts"
   ],
   "scripts": {
     "build": "microbundle",
     "dev": "microbundle watch",
+    "pretest": "yarn build",
     "test": "ava"
   },
   "devDependencies": {

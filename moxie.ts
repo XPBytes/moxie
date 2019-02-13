@@ -1,7 +1,7 @@
 // @ts-check
 
 class ArgumentError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message)
 
     Error.captureStackTrace(this, this.constructor)
@@ -9,20 +9,26 @@ class ArgumentError extends Error {
 }
 
 class MockVerificationError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message)
 
     Error.captureStackTrace(this, this.constructor)
   }
 }
 
+type Predicate = (...args: any[]) => boolean
+type MockedCall = { retval: any, args?: any[], predicate?: Predicate }
+
 /**
- * @property {{ [P: string]: { retval: any, args?: any[], predicate?: ((...args: any[]) => void)} }} expected_calls expected calls
- * @property {{ [P: string]: { retval: any, args?: any[], predicate?: ((...args: any[]) => void)} }} actual_calls actual calls
+ * @property {{ [P: string]: MockedCall[] }} expected_calls expected calls
+ * @property {{ [P: string]: MockedCall[] }} actual_calls actual calls
  *
  * @class Mock
  */
 class Mock {
+  expected_calls: { [P: string]: MockedCall[] }
+  actual_calls: { [P: string]: MockedCall[] }
+
   constructor() {
     this.expected_calls = {}
     this.actual_calls = {}
@@ -35,7 +41,7 @@ class Mock {
    * @returns {string}
    * @memberof Mock
    */
-  __print(args) {
+  __print(args: any): string {
     return JSON.stringify(args)
   }
 
@@ -45,10 +51,10 @@ class Mock {
    * @param {string} name the method name
    * @param {any} retval the desired return value
    * @param {any[]} [args=[]] the expected arguments, or an empty array if predicate is given
-   * @param {((...args: any[]) => void)|undefined} [predicate=undefined] function to call with the arguments to test a match
+   * @param {Predicate|undefined} [predicate=undefined] function to call with the arguments to test a match
    * @memberof Mock
    */
-  expect(name, retval, args = [], predicate = undefined) {
+  expect(name: string, retval: any, args: any[] = [], predicate: Predicate = undefined) {
     if (predicate instanceof Function) {
       if (args && (!Array.isArray(args) || args.length > 0)) {
         throw new ArgumentError(`args ignored when predicate is given (args: ${this.__print(args)})`)
@@ -72,7 +78,7 @@ class Mock {
    * @throws {Error} if an expected call has not been registered
    * @returns {true} returns if verified, throws otherwise
    */
-  verify() {
+  verify(): true {
     Object.keys(this.expected_calls).forEach((name) => {
       const expected = this.expected_calls[name]
       const actual = this.actual_calls[name]
@@ -83,7 +89,7 @@ class Mock {
       }
       if (actual.length < expected.length) {
         throw new MockVerificationError(
-          `expected ${this.__print_call(name, expected[actual.size])}, got [${this.__print_call(name, actual)}]`
+          `expected ${this.__print_call(name, expected[actual.length])}, got [${this.__print_call(name, actual)}]`
         )
       }
     })
@@ -110,13 +116,13 @@ class Mock {
   /**
    * Helper to print out an expected call
    *
-   * @param {*} name
-   * @param {*} data
+   * @param {string} name
+   * @param {any} data
    * @returns
    * @private
    * @memberof Mock
    */
-  __print_call(name, data) {
+  __print_call(name: string, data: any): string {
     if (Array.isArray(data)) {
       return data.map((d) => this.__call(name, d)).join(', ')
     }
@@ -131,7 +137,7 @@ class Mock {
    * @returns {boolean}
    * @memberof Mock
    */
-  __compare([left, right]) {
+  __compare([left, right]: [any, any]): boolean {
     // TODO: implement case equality
     return left === right
   }
@@ -143,7 +149,7 @@ class Mock {
    * @returns {Mock}
    * @memberof Mock
    */
-  then() {
+  then(): this {
     return this
   }
 
@@ -153,7 +159,7 @@ class Mock {
    * @param {string} name the original function name
    * @param  {...any} actual_args the original arguments
    */
-  __call(name, ...actual_args) {
+  __call(name: string, ...actual_args: any[]) {
     const actual_calls = this.actual_calls[name] = this.actual_calls[name] || []
     const index = actual_calls.length
     const expected_call = (this.expected_calls[name] || [])[index]
@@ -215,21 +221,20 @@ const KNOWN = [
 .concat(Object.getOwnPropertyNames(Object.prototype))
 .concat(Object.getOwnPropertyNames(Mock.prototype))
 
-
 const __handler = {
   /**
    * Called right before a property (function or otherwise) is retrieved
    *
-   * @param {Mock & ( (name: string, ...args: any[]) => void )} mock
+   * @param {Mock} mock
    * @param {string} prop
    */
-  get: function(mock, prop) {
+  get: function(mock: Mock, prop: string) {
     if (mock.hasOwnProperty(prop) || mock[prop]) {
       return mock[prop]
     }
 
     if (mock.expected_calls[prop]) {
-      return (...args) => mock.__call(prop, ...args)
+      return (...args: any[]) => mock.__call(prop, ...args)
     }
 
     const name = prop.toString()
@@ -244,6 +249,6 @@ const __handler = {
   }
 }
 
-export default function createMock() {
+export default function createMock(): Mock {
   return new Proxy(new Mock(), __handler)
 }
