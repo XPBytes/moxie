@@ -1,6 +1,6 @@
 {
   "name": "@xpbytes/moxie",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Proxy based mock for node and v8",
   "main": "dist/moxie.js",
   "umd:main": "dist/moxie.umd.js",
@@ -19,12 +19,14 @@
     "build": "microbundle",
     "dev": "microbundle watch",
     "pretest": "yarn build",
-    "test": "ava"
+    "test": "ava",
+    "prepublish": "rimraf dist && yarn test"
   },
   "devDependencies": {
     "ava": "^1.2.1",
     "esm": "^3.2.4",
-    "microbundle": "^0.9.0"
+    "microbundle": "^0.9.0",
+    "rimraf": "^2.6.3"
   },
   "ava": {
     "require": [
