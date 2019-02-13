@@ -77,4 +77,4 @@ typings/
 
 dist
 
-tests/dist
+.rts2_cache_*
