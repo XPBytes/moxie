@@ -54,7 +54,7 @@ class Mock {
    * @param {Predicate|undefined} [predicate=undefined] function to call with the arguments to test a match
    * @memberof Mock
    */
-  expect(name: string, retval: any, args: any[] = [], predicate: Predicate = undefined) {
+  expect(name: string, retval: any, args: any[] = [], predicate?: Predicate) {
     if (predicate instanceof Function) {
       if (args && (!Array.isArray(args) || args.length > 0)) {
         throw new ArgumentError(`args ignored when predicate is given (args: ${this.__print(args)})`)
@@ -170,7 +170,7 @@ class Mock {
         )
     }
 
-    const { args: expected_args, retval, predicate } = expected_call
+    const { args: maybe_expected_args, retval, predicate } = expected_call
 
     if (predicate) {
       actual_calls.push(expected_call)
@@ -183,13 +183,15 @@ class Mock {
       return retval
     }
 
+    const expected_args = maybe_expected_args!!
+
     if (expected_args.length !== actual_args.length) {
       throw new MockVerificationError(
         `mocked method ${name} expects ${expected_args.length}, got ${actual_args.length}`
       )
     }
 
-    const zipped_args = expected_args.map((arg, i) => [arg, actual_args[i]])
+    const zipped_args = expected_args.map((arg, i) => [arg, actual_args[i]]) as [any, any][]
     // Intentional == to coerce
     // TODO: allow for === case equailty style matching later
     const fully_matched = zipped_args.every(this.__compare)
@@ -228,7 +230,7 @@ const __handler = {
    * @param {Mock} mock
    * @param {string} prop
    */
-  get: function(mock: Mock, prop: string) {
+  get: function(mock: Mock & { [P: string]: any }, prop: string) {
     if (mock.hasOwnProperty(prop) || mock[prop]) {
       return mock[prop]
     }
@@ -243,7 +245,7 @@ const __handler = {
     }
 
     const expected_calls = Object.keys(mock.expected_calls) || ['<nothing>']
-    throw new Error(
+    throw new ArgumentError(
       `unmocked method ${name}, expected one of ${mock.__print(expected_calls)}`
       )
   }
