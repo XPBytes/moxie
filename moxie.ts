@@ -124,7 +124,7 @@ class Mock {
    */
   __print_call(name: string, data: any): string {
     if (Array.isArray(data)) {
-      return data.map((d) => this.__call(name, d)).join(', ')
+      return data.map((d) => this.__print_call(name, d)).join(', ')
     }
 
     return `${name}(${(data.args || []).join(', ')}) => ${typeof data.retval} (${data.retval})`
