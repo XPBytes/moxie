@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "ava": "^1.2.1",
-    "esm": "^3.2.9",
+    "esm": "^3.2.10",
     "microbundle": "^0.9.0",
     "rimraf": "^2.6.3",
     "terser": "^3.16.1"
