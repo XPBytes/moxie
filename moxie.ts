@@ -3,8 +3,14 @@ import ArgumentError from './ArgumentError'
 import MockVerificationError from './MockVerificationError'
 
 type Predicate = (...args: any[]) => boolean
-interface MockedCall { retval: any; args?: any[]; predicate?: Predicate }
-interface MockedCallMap { [P: string]: MockedCall[] }
+interface MockedCall {
+  retval: any
+  args?: any[]
+  predicate?: Predicate
+}
+interface MockedCallMap {
+  [P: string]: MockedCall[]
+}
 
 /**
  * @property {MockedCallMap} expectedCalls expected calls
@@ -43,7 +49,12 @@ class Mock {
    * @param {Predicate|undefined} [predicate=undefined] function to call with the arguments to test a match
    * @memberof Mock
    */
-  public expect(name: string, retval: any, args: any[] = [], predicate?: Predicate) {
+  public expect(
+    name: string,
+    retval: any,
+    args: any[] = [],
+    predicate?: Predicate
+  ) {
     if (predicate instanceof Function) {
       if (args && (!Array.isArray(args) || args.length > 0)) {
         throw new ArgumentError(
@@ -156,8 +167,7 @@ class Mock {
    * @param  {...any} actualArgs the original arguments
    */
   public __call(name: string, ...actualArgs: any[]) {
-    const actualCalls = (this.actualCalls[name] =
-      this.actualCalls[name] || [])
+    const actualCalls = (this.actualCalls[name] = this.actualCalls[name] || [])
     const index = actualCalls.length
     const expectedCall = (this.expectedCalls[name] || [])[index]
 
@@ -271,8 +281,7 @@ createMock.ArgumentError = ArgumentError
 createMock.MockVerificationError = MockVerificationError
 
 export default createMock as {
-  (): Mock,
+  (): Mock
   ArgumentError: typeof ArgumentError
   MockVerificationError: typeof MockVerificationError
 }
-
