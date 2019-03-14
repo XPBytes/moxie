@@ -1,7 +1,12 @@
+// @ts-check
+
 import test from 'ava'
 import createMock from '../dist/moxie'
 
 const PROPERTIES = Object.getOwnPropertyNames(Object.getPrototypeOf(createMock()))
+
+const ArgumentError = createMock.ArgumentError
+const MockVerificationError = createMock.MockVerificationError
 
 test('mocks can expect', (t) => {
   const mock = createMock()
@@ -57,14 +62,14 @@ test('expect with name and retval multiple times', (t) => {
 
 test('mock throws if not expected', (t) => {
   const mock = createMock()
-  t.throws(() => mock.foo())
+  t.throws(() => { mock.foo() }, ArgumentError)
 })
 
 test('mock throws if not enough expected', (t) => {
   const mock = createMock()
   mock.expect('foo', 'bar')
   t.is(mock.foo(), 'bar')
-  t.throws(() => mock.foo())
+  t.throws(() => { mock.foo() }, MockVerificationError)
 })
 
 test('verify is true if nothing called and expected', (t) => {
@@ -82,7 +87,7 @@ test('verify is true if expected is called', (t) => {
 test('verify throws if expected not matched', (t) => {
   const mock = createMock()
   mock.expect('foo', 'bar')
-  t.throws(() => mock.verify())
+  t.throws(() => { mock.verify() }, MockVerificationError)
 })
 
 test('reset is no-op if nothing called and expected', (t) => {
@@ -98,7 +103,7 @@ test('reset removes expectations', (t) => {
   mock.reset()
 
   t.true(mock.verify())
-  t.throws(() => mock.foo())
+  t.throws(() => { mock.foo() }, ArgumentError)
 })
 
 test('verify is no-op if nothing called and expected', (t) => {
@@ -106,9 +111,15 @@ test('verify is no-op if nothing called and expected', (t) => {
   t.true(mock.verify())
 })
 
-test('README.md sample', (t) => {
+test('enforces arg or block', (t) => {
+  const mock = createMock()
+  t.throws(() => { mock.expect('foo', undefined, ['bar'], () => false) }, ArgumentError)
+  // @ts-ignore
+  t.throws(() => { mock.expect('foo', undefined, 'bar') }, ArgumentError)
+})
 
-const mock = createMock()
+test('README.md sample', (t) => {
+  const mock = createMock()
 
   mock.expect('name', 'first')
   mock.expect('name', 'second')
@@ -121,11 +132,11 @@ const mock = createMock()
   t.is(mock.complicated('like', 'that'), 'uhuh')
   t.true(mock.verify())
 
-  t.throws(() => mock.name())
+  t.throws(() => { mock.name() }, MockVerificationError)
 
   mock.expect('callme', 42, ['maybe'])
-  t.throws(() => mock.callme('foo'))
-  t.throws(() => mock.verify())
+  t.throws(() => { mock.callme('foo') }, MockVerificationError)
+  t.throws(() => { mock.verify() }, MockVerificationError)
 
   mock.reset()
   t.true(mock.verify())
