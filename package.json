@@ -43,5 +43,8 @@
     "require": [
       "esm"
     ]
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin-tslint": "^1.6.0"
   }
 }

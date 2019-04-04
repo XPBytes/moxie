@@ -495,6 +495,13 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.1.tgz#48fd98c1561fe718b61733daed46ff115b496e18"
   integrity sha512-eqz8c/0kwNi/OEHQfvIuJVLTst3in0e7uTKeuY+WL/zfKn0xVujOTp42bS/vUUokhK5P2BppLd9JXMOMHcgbjA==
 
+"@typescript-eslint/eslint-plugin-tslint@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin-tslint/-/eslint-plugin-tslint-1.6.0.tgz#8e22af21a2fd9f84debb8a69ef56bc5dab9157ed"
+  integrity sha512-euDCThQ26LmBeSWCGOUT+CyFhk0S86Yq5sZnnwyr+q9eeekySBW1g2AYLc8Hmuq1edXjLjM6d5RB5Yl3ZesQKA==
+  dependencies:
+    lodash.memoize "^4.1.2"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
