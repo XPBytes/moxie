@@ -25,12 +25,14 @@
     "format:base": "yarn prettier --arrow-parens=avoid --parser=typescript --no-semi --single-quote --trailing-comma=none",
     "format": "yarn format:base --write **/*.ts",
     "format:check": "yarn format:base -c **/*.ts",
-    "lint": "yarn eslint *.ts test/*.ts"
+    "lint": "yarn eslint . --ext .ts test/* --ext .ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^1.6.0",
     "@typescript-eslint/parser": "^1.6.0",
     "ava": "^1.4.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-import": "^2.17.2",
     "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-prettier": "^3.0.1",
     "esm": "^3.2.22",
@@ -45,8 +47,5 @@
     "require": [
       "esm"
     ]
-  },
-  "dependencies": {
-    "eslint": "^5.16.0"
   }
 }
