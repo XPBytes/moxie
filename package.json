@@ -41,7 +41,7 @@
     "prettier": "^1.17.0",
     "rimraf": "^2.6.3",
     "terser": "^3.17.0",
-    "typescript": "^3.4.1"
+    "typescript": "^3.4.3"
   },
   "ava": {
     "require": [
