@@ -40,13 +40,15 @@
     "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-prettier": "^3.0.1",
-    "esm": "^3.2.22",
+    "esm": "^3.2.25",
     "microbundle": "^0.11.0",
     "nyc": "^13.3.0",
     "prettier": "1.17.1",
     "rimraf": "^2.6.3",
     "terser": "^3.17.0",
-    "typescript": "^3.4.3"
+    "tslint": "^5.14.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.5.1"
   },
   "ava": {
     "require": [
