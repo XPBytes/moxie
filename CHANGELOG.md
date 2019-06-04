@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0
+
+- Replaced tslint with eslint
+- Updated prettier
+
 ## 1.2.0
 
 - Update dependencies

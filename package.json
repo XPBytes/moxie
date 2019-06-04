@@ -1,6 +1,6 @@
 {
   "name": "@xpbytes/moxie",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Proxy based mock for node and v8",
   "main": "dist/moxie.js",
   "umd:main": "dist/moxie.umd.js",
