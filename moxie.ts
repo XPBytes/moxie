@@ -49,17 +49,10 @@ class Mock {
    * @param {Predicate|undefined} [predicate=undefined] function to call with the arguments to test a match
    * @memberof Mock
    */
-  public expect(
-    name: string,
-    retval: any,
-    args: any[] = [],
-    predicate?: Predicate
-  ) {
+  public expect(name: string, retval: any, args: any[] = [], predicate?: Predicate) {
     if (predicate instanceof Function) {
       if (args && (!Array.isArray(args) || args.length > 0)) {
-        throw new ArgumentError(
-          `args ignored when predicate is given (args: ${this.__print(args)})`
-        )
+        throw new ArgumentError(`args ignored when predicate is given (args: ${this.__print(args)})`)
       }
       this.expectedCalls[name] = this.expectedCalls[name] || []
       this.expectedCalls[name].push({ retval, predicate })
@@ -85,16 +78,11 @@ class Mock {
       const expected = this.expectedCalls[name]
       const actual = this.actualCalls[name]
       if (!actual) {
-        throw new MockVerificationError(
-          `expected ${this.__print_call(name, expected[0])}`
-        )
+        throw new MockVerificationError(`expected ${this.__print_call(name, expected[0])}`)
       }
       if (actual.length < expected.length) {
         throw new MockVerificationError(
-          `expected ${this.__print_call(
-            name,
-            expected[actual.length]
-          )}, got [${this.__print_call(name, actual)}]`
+          `expected ${this.__print_call(name, expected[actual.length])}, got [${this.__print_call(name, actual)}]`
         )
       }
     })
@@ -132,9 +120,7 @@ class Mock {
       return data.map(d => this.__print_call(name, d)).join(', ')
     }
 
-    return `${name}(${(data.args || []).join(
-      ', '
-    )}) => ${typeof data.retval} (${data.retval})`
+    return `${name}(${(data.args || []).join(', ')}) => ${typeof data.retval} (${data.retval})`
   }
 
   /**
@@ -173,9 +159,7 @@ class Mock {
 
     if (!expectedCall) {
       throw new MockVerificationError(
-        `No more (>= ${index}) expects available for ${name}: ${this.__print(
-          actualArgs
-        )} (${this.__print(this)})`
+        `No more (>= ${index}) expects available for ${name}: ${this.__print(actualArgs)} (${this.__print(this)})`
       )
     }
 
@@ -184,11 +168,7 @@ class Mock {
     if (predicate) {
       actualCalls.push(expectedCall)
       if (!predicate(...actualArgs)) {
-        throw new MockVerificationError(
-          `mocked method ${name} failed predicate w/ ${this.__print(
-            actualArgs
-          )}`
-        )
+        throw new MockVerificationError(`mocked method ${name} failed predicate w/ ${this.__print(actualArgs)}`)
       }
 
       return retval
@@ -197,26 +177,19 @@ class Mock {
     const expectedArgs = maybeExpectedArgs!!
 
     if (expectedArgs.length !== actualArgs.length) {
-      throw new MockVerificationError(
-        `mocked method ${name} expects ${expectedArgs.length}, got ${
-          actualArgs.length
-        }`
-      )
+      throw new MockVerificationError(`mocked method ${name} expects ${expectedArgs.length}, got ${actualArgs.length}`)
     }
 
-    const zippedArgs = expectedArgs.map((arg, i) => [
-      arg,
-      actualArgs[i]
-    ]) as Array<[any, any]>
+    const zippedArgs = expectedArgs.map((arg, i) => [arg, actualArgs[i]]) as Array<[any, any]>
     // Intentional == to coerce
     // TODO: allow for === case equailty style matching later
     const fullyMatched = zippedArgs.every(this.__compare)
 
     if (!fullyMatched) {
       throw new MockVerificationError(
-        `mocked method ${name} called with unexpected arguments ${this.__print(
-          actualArgs
-        )}, expected ${this.__print(expectedArgs)}`
+        `mocked method ${name} called with unexpected arguments ${this.__print(actualArgs)}, expected ${this.__print(
+          expectedArgs
+        )}`
       )
     }
 
@@ -263,9 +236,7 @@ const handler = {
     }
 
     const expectedCalls = Object.keys(mock.expectedCalls) || ['<nothing>']
-    throw new ArgumentError(
-      `unmocked method ${name}, expected one of ${mock.__print(expectedCalls)}`
-    )
+    throw new ArgumentError(`unmocked method ${name}, expected one of ${mock.__print(expectedCalls)}`)
   }
 }
 
