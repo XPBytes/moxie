@@ -28,13 +28,13 @@
     "lint": "yarn eslint . --ext .ts test/* --ext .ts"
   },
   "husky": {
-     "hooks": {
-        "pre-commit": "pretty-quick --staged" 
-        } 
-      }, 
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^1.6.0",
-    "@typescript-eslint/parser": "^1.6.0",
+    "@typescript-eslint/parser": "^1.10.2",
     "ava": "^1.4.1",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.1.0",
