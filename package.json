@@ -48,7 +48,7 @@
     "terser": "^3.17.0",
     "tslint": "^5.18.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4"
   },
   "ava": {
     "require": [
