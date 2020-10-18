@@ -1,5 +1,5 @@
 export default class ArgumentError extends Error {
-  constructor(message: string) {
+  public constructor(message: string) {
     super(message)
 
     Error.captureStackTrace(this, this.constructor)

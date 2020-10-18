@@ -1,6 +1,6 @@
 {
   "name": "@xpbytes/moxie",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "Proxy based mock for node and v8",
   "main": "dist/moxie.js",
   "umd:main": "dist/moxie.umd.js",
@@ -27,28 +27,21 @@
     "format:check": "yarn format:base -c **/*.ts",
     "lint": "yarn eslint . --ext .ts test/* --ext .ts"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
-  },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^1.13.0",
-    "@typescript-eslint/parser": "^1.13.0",
-    "ava": "^1.4.1",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^4.1.0",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-prettier": "^3.1.3",
+    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/parser": "^4.4.1",
+    "ava": "^3.13.0",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^6.13.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.1.4",
     "esm": "^3.2.25",
-    "microbundle": "^0.11.0",
-    "nyc": "^13.3.0",
-    "prettier": "1.17.1",
-    "rimraf": "^2.7.1",
-    "terser": "^3.17.0",
-    "tslint": "^5.20.1",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.9.3"
+    "microbundle": "^0.12.4",
+    "nyc": "^15.1.0",
+    "prettier": "2.1.2",
+    "rimraf": "^3.0.2",
+    "terser": "^5.3.5",
+    "typescript": "^4.0.3"
   },
   "ava": {
     "require": [

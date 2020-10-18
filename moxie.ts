@@ -2,10 +2,10 @@
 import ArgumentError from './ArgumentError'
 import MockVerificationError from './MockVerificationError'
 
-type Predicate = (...args: any[]) => boolean
+type Predicate = (...args: unknown[]) => boolean
 interface MockedCall {
-  retval: any
-  args?: any[]
+  retval: unknown
+  args?: unknown[]
   predicate?: Predicate
 }
 interface MockedCallMap {
@@ -19,12 +19,12 @@ interface MockedCallMap {
  * @class Mock
  */
 class Mock {
-  [name: string]: any
+  [name: string]: unknown
 
   public expectedCalls: MockedCallMap
   public actualCalls: MockedCallMap
 
-  constructor() {
+  public constructor() {
     this.expectedCalls = {}
     this.actualCalls = {}
   }
@@ -32,11 +32,11 @@ class Mock {
   /**
    * Helper to stringify the input args
    *
-   * @param {any} args
+   * @param {unknown} args
    * @returns {string}
    * @memberof Mock
    */
-  public __print(args: any): string {
+  public __print(args: unknown): string {
     return JSON.stringify(args)
   }
 
@@ -44,15 +44,22 @@ class Mock {
    * Mock a call to a method
    *
    * @param {string} name the method name
-   * @param {any} retval the desired return value
-   * @param {any[]} [args=[]] the expected arguments, or an empty array if predicate is given
+   * @param {unknown} retval the desired return value
+   * @param {unknown[]} [args=[]] the expected arguments, or an empty array if predicate is given
    * @param {Predicate|undefined} [predicate=undefined] function to call with the arguments to test a match
    * @memberof Mock
    */
-  public expect(name: string, retval: any, args: any[] = [], predicate?: Predicate) {
+  public expect(
+    name: string,
+    retval: unknown,
+    args: unknown[] = [],
+    predicate?: Predicate
+  ): void | never {
     if (predicate instanceof Function) {
       if (args && (!Array.isArray(args) || args.length > 0)) {
-        throw new ArgumentError(`args ignored when predicate is given (args: ${this.__print(args)})`)
+        throw new ArgumentError(
+          `args ignored when predicate is given (args: ${this.__print(args)})`
+        )
       }
       this.expectedCalls[name] = this.expectedCalls[name] || []
       this.expectedCalls[name].push({ retval, predicate })
@@ -74,18 +81,25 @@ class Mock {
    * @returns {true} returns if verified, throws otherwise
    */
   public verify(): true {
-    Object.keys(this.expectedCalls).forEach(name => {
-      const expected = this.expectedCalls[name]
-      const actual = this.actualCalls[name]
-      if (!actual) {
-        throw new MockVerificationError(`expected ${this.__print_call(name, expected[0])}`)
+    Object.keys(this.expectedCalls).forEach(
+      (name): void => {
+        const expected = this.expectedCalls[name]
+        const actual = this.actualCalls[name]
+        if (!actual) {
+          throw new MockVerificationError(
+            `expected ${this.__print_call(name, expected[0])}`
+          )
+        }
+        if (actual.length < expected.length) {
+          throw new MockVerificationError(
+            `expected ${this.__print_call(
+              name,
+              expected[actual.length]
+            )}, got [${this.__print_call(name, actual)}]`
+          )
+        }
       }
-      if (actual.length < expected.length) {
-        throw new MockVerificationError(
-          `expected ${this.__print_call(name, expected[actual.length])}, got [${this.__print_call(name, actual)}]`
-        )
-      }
-    })
+    )
 
     return true
   }
@@ -93,7 +107,7 @@ class Mock {
   /**
    * Alias for {reset}
    */
-  public clear() {
+  public clear(): void {
     this.reset()
   }
 
@@ -101,7 +115,7 @@ class Mock {
    * Resets all the expected and actual calls
    * @memberof Mock
    */
-  public reset() {
+  public reset(): void {
     this.expectedCalls = {}
     this.actualCalls = {}
   }
@@ -110,27 +124,35 @@ class Mock {
    * Helper to print out an expected call
    *
    * @param {string} name
-   * @param {any} data
+   * @param {unknown} data
    * @returns
    * @private
    * @memberof Mock
    */
-  public __print_call(name: string, data: any): string {
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  public __print_call(
+    name: string,
+    data:
+      | Pick<MockedCall, 'args' | 'retval'>
+      | Pick<MockedCall, 'args' | 'retval'>[]
+  ): string {
     if (Array.isArray(data)) {
-      return data.map(d => this.__print_call(name, d)).join(', ')
+      return data.map((d): string => this.__print_call(name, d)).join(', ')
     }
 
-    return `${name}(${(data.args || []).join(', ')}) => ${typeof data.retval} (${data.retval})`
+    return `${name}(${(data.args || []).join(
+      ', '
+    )}) => ${typeof data.retval} (${data.retval})`
   }
 
   /**
    * Compare two arguments for equality
    *
-   * @param {[any, any]} args
+   * @param {[unknown, unknown]} args
    * @returns {boolean}
    * @memberof Mock
    */
-  public __compare([left, right]: [any, any]): boolean {
+  public __compare([left, right]: [unknown, unknown]): boolean {
     // TODO: implement case equality
     return left === right
   }
@@ -150,16 +172,18 @@ class Mock {
    * Called when the mock is called as a function
    *
    * @param {string} name the original function name
-   * @param  {...any} actualArgs the original arguments
+   * @param  {...unknown} actualArgs the original arguments
    */
-  public __call(name: string, ...actualArgs: any[]) {
+  public __call(name: string, ...actualArgs: unknown[]): unknown {
     const actualCalls = (this.actualCalls[name] = this.actualCalls[name] || [])
     const index = actualCalls.length
     const expectedCall = (this.expectedCalls[name] || [])[index]
 
     if (!expectedCall) {
       throw new MockVerificationError(
-        `No more (>= ${index}) expects available for ${name}: ${this.__print(actualArgs)} (${this.__print(this)})`
+        `No more (>= ${index}) expects available for ${name}: ${this.__print(
+          actualArgs
+        )} (${this.__print(this)})`
       )
     }
 
@@ -168,28 +192,38 @@ class Mock {
     if (predicate) {
       actualCalls.push(expectedCall)
       if (!predicate(...actualArgs)) {
-        throw new MockVerificationError(`mocked method ${name} failed predicate w/ ${this.__print(actualArgs)}`)
+        throw new MockVerificationError(
+          `mocked method ${name} failed predicate w/ ${this.__print(
+            actualArgs
+          )}`
+        )
       }
 
       return retval
     }
 
-    const expectedArgs = maybeExpectedArgs!!
+    const expectedArgs = maybeExpectedArgs as unknown[]
 
     if (expectedArgs.length !== actualArgs.length) {
-      throw new MockVerificationError(`mocked method ${name} expects ${expectedArgs.length}, got ${actualArgs.length}`)
+      throw new MockVerificationError(
+        `mocked method ${name} expects ${expectedArgs.length}, got ${
+          actualArgs.length
+        }`
+      )
     }
 
-    const zippedArgs = expectedArgs.map((arg, i) => [arg, actualArgs[i]]) as Array<[any, any]>
+    const zippedArgs = expectedArgs.map(
+      (arg, i): [unknown, unknown] => [arg, actualArgs[i]]
+    ) as [unknown, unknown][]
     // Intentional == to coerce
     // TODO: allow for === case equailty style matching later
     const fullyMatched = zippedArgs.every(this.__compare)
 
     if (!fullyMatched) {
       throw new MockVerificationError(
-        `mocked method ${name} called with unexpected arguments ${this.__print(actualArgs)}, expected ${this.__print(
-          expectedArgs
-        )}`
+        `mocked method ${name} called with unexpected arguments ${this.__print(
+          actualArgs
+        )}, expected ${this.__print(expectedArgs)}`
       )
     }
 
@@ -221,13 +255,13 @@ const handler = {
    * @param {Mock} mock
    * @param {string} prop
    */
-  get(mock: Mock & { [P: string]: any }, prop: string) {
+  get(mock: Mock & { [P: string]: unknown }, prop: string): unknown | never {
     if (mock.hasOwnProperty(prop) || mock[prop]) {
       return mock[prop]
     }
 
     if (mock.expectedCalls[prop]) {
-      return (...args: any[]) => mock.__call(prop, ...args)
+      return (...args: unknown[]): unknown => mock.__call(prop, ...args)
     }
 
     const name = prop.toString()
@@ -236,7 +270,9 @@ const handler = {
     }
 
     const expectedCalls = Object.keys(mock.expectedCalls) || ['<nothing>']
-    throw new ArgumentError(`unmocked method ${name}, expected one of ${mock.__print(expectedCalls)}`)
+    throw new ArgumentError(
+      `unmocked method ${name}, expected one of ${mock.__print(expectedCalls)}`
+    )
   }
 }
 
