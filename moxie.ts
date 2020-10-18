@@ -3,6 +3,8 @@ import ArgumentError from './ArgumentError'
 import MockVerificationError from './MockVerificationError'
 
 type Predicate = (...args: unknown[]) => boolean
+type Ret = unknown | ((...args: unknown[]) => unknown)
+
 interface MockedCall {
   retval: unknown
   args?: unknown[]
@@ -12,15 +14,17 @@ interface MockedCallMap {
   [P: string]: MockedCall[]
 }
 
+interface Mockable {
+  [name: string]: Ret
+}
+
 /**
  * @property {MockedCallMap} expectedCalls expected calls
  * @property {MockedCallMap} actualCalls actual calls
  *
  * @class Mock
  */
-class Mock {
-  [name: string]: unknown
-
+class Mock<M extends Mockable> {
   public expectedCalls: MockedCallMap
   public actualCalls: MockedCallMap
 
@@ -49,12 +53,12 @@ class Mock {
    * @param {Predicate|undefined} [predicate=undefined] function to call with the arguments to test a match
    * @memberof Mock
    */
-  public expect(
-    name: string,
-    retval: unknown,
-    args: unknown[] = [],
+  public expect<N extends string, R = unknown, A extends unknown[] = unknown[]>(
+    name: N,
+    retval: R,
+    args?: A,
     predicate?: Predicate
-  ): void | never {
+  ): Mock<M & Record<N, (...args: A) => R | R>> {
     if (predicate instanceof Function) {
       if (args && (!Array.isArray(args) || args.length > 0)) {
         throw new ArgumentError(
@@ -63,14 +67,15 @@ class Mock {
       }
       this.expectedCalls[name] = this.expectedCalls[name] || []
       this.expectedCalls[name].push({ retval, predicate })
-      return
+      return this
     }
 
-    if (!Array.isArray(args)) {
+    if (args !== undefined && !Array.isArray(args)) {
       throw new ArgumentError('args must be an array')
     }
     this.expectedCalls[name] = this.expectedCalls[name] || []
-    this.expectedCalls[name].push({ retval, args })
+    this.expectedCalls[name].push({ retval, args: args || [] })
+    return this
   }
 
   /**
@@ -127,7 +132,6 @@ class Mock {
    * @private
    * @memberof Mock
    */
-  // eslint-disable-next-line @typescript-eslint/camelcase
   public __print_call(
     name: string,
     data:
@@ -252,9 +256,12 @@ const handler = {
    * @param {Mock} mock
    * @param {string} prop
    */
-  get(mock: Mock & { [P: string]: unknown }, prop: string): unknown | never {
-    if (mock.hasOwnProperty(prop) || mock[prop]) {
-      return mock[prop]
+  get<T extends Mock<M>, M extends Mockable & Record<P, Ret>, P extends string>(
+    mock: T,
+    prop: P
+  ): unknown | never {
+    if (Object.prototype.hasOwnProperty.call(mock, prop)) {
+      return (mock as Record<P, Ret>)[prop]
     }
 
     if (mock.expectedCalls[prop]) {
@@ -263,7 +270,7 @@ const handler = {
 
     const name = prop.toString()
     if (KNOWN.indexOf(name) !== -1 || typeof prop === 'symbol') {
-      return mock[prop]
+      return (mock as Record<P, Ret>)[prop]
     }
 
     const expectedCalls = Object.keys(mock.expectedCalls) || ['<nothing>']
@@ -277,7 +284,7 @@ const handler = {
  * @property {new () => ArgumentError} ArgumentError
  * @property {new () => MockVerificationError} MockVerificationError
  */
-function createMock(): Mock {
+function createMock(): Mock<Record<string, unknown>> {
   return new Proxy(new Mock(), handler)
 }
 
@@ -285,7 +292,7 @@ createMock.ArgumentError = ArgumentError
 createMock.MockVerificationError = MockVerificationError
 
 export default createMock as {
-  (): Mock
+  (): Mock<Record<string, unknown>>
   ArgumentError: typeof ArgumentError
   MockVerificationError: typeof MockVerificationError
 }

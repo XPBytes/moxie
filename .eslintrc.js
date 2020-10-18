@@ -8,7 +8,11 @@ module.exports = {
     'prettier',
     'prettier/@typescript-eslint'
   ],
+  rules: {
+    '@typescript-eslint/no-var-requires': 0
+  },
   env: {
-    es6: true
+    es6: true,
+    node: true
   }
 }

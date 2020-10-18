@@ -1,56 +1,67 @@
 // @ts-check
 
-import test from 'ava'
-import createMock from '../dist/moxie'
+/** @type {any} */
+const test_ = require('ava')
 
-const PROPERTIES = Object.getOwnPropertyNames(Object.getPrototypeOf(createMock()))
+/** @type {import('ava').TestInterface<unknown>} */
+const test = test_.default || test_
+
+/** @type {any} */
+const createMock_ = require('../dist/moxie')
+
+/** @type {import('../dist/moxie')['default']} */
+const createMock = createMock_.default || createMock_
+
+const PROPERTIES = Object.getOwnPropertyNames(
+  Object.getPrototypeOf(createMock())
+)
 
 const ArgumentError = createMock.ArgumentError
 const MockVerificationError = createMock.MockVerificationError
 
-test('mocks can expect', (t) => {
+test('mocks can expect', t => {
   const mock = createMock()
   t.not(PROPERTIES.indexOf('expect'), -1)
   t.true(typeof mock.expect === 'function')
   t.true(mock.expect.length >= 2 && mock.expect.length <= 4)
 })
 
-test('mocks can verify', (t) => {
+test('mocks can verify', t => {
   const mock = createMock()
   t.not(PROPERTIES.indexOf('verify'), -1)
   t.true(typeof mock.verify === 'function')
   t.is(mock.verify.length, 0)
 })
 
-test('mocks can reset', (t) => {
+test('mocks can reset', t => {
   const mock = createMock()
   t.not(PROPERTIES.indexOf('reset'), -1)
   t.true(typeof mock.reset === 'function')
   t.is(mock.reset.length, 0)
 })
 
-test('expect with name and retval', (t) => {
+test('expect with name and retval', t => {
   const mock = createMock()
   mock.expect('foo', 'bar')
   t.true(typeof mock.foo === 'function')
   t.is(mock.foo(), 'bar')
 })
 
-test('expect with name and retval and args', (t) => {
+test('expect with name and retval and args', t => {
   const mock = createMock()
   mock.expect('foo', 'bar', [1])
   t.true(typeof mock.foo === 'function')
   t.is(mock.foo(1), 'bar')
 })
 
-test('expect with name and retval and block', (t) => {
+test('expect with name and retval and block', t => {
   const mock = createMock()
-  mock.expect('foo', 'bar', [], (arg) => arg === 1)
+  mock.expect('foo', 'bar', [], arg => arg === 1)
   t.true(typeof mock.foo === 'function')
   t.is(mock.foo(1), 'bar')
 })
 
-test('expect with name and retval multiple times', (t) => {
+test('expect with name and retval multiple times', t => {
   const mock = createMock()
   mock.expect('foo', 'bar')
   mock.expect('foo', 'apple')
@@ -60,71 +71,106 @@ test('expect with name and retval multiple times', (t) => {
   t.is(mock.foo(), 'apple')
 })
 
-test('mock throws if not expected', (t) => {
+test('mock throws if not expected', t => {
   const mock = createMock()
-  t.throws(() => { mock.foo() }, ArgumentError)
+  t.throws(
+    () => {
+      mock.foo()
+    },
+    { instanceOf: ArgumentError }
+  )
 })
 
-test('mock throws if not enough expected', (t) => {
+test('mock throws if not enough expected', t => {
   const mock = createMock()
   mock.expect('foo', 'bar')
   t.is(mock.foo(), 'bar')
-  t.throws(() => { mock.foo() }, MockVerificationError)
+  t.throws(
+    () => {
+      mock.foo()
+    },
+    { instanceOf: MockVerificationError }
+  )
 })
 
-test('verify is true if nothing called and expected', (t) => {
+test('verify is true if nothing called and expected', t => {
   const mock = createMock()
   t.true(mock.verify())
 })
 
-test('verify is true if expected is called', (t) => {
+test('verify is true if expected is called', t => {
   const mock = createMock()
   mock.expect('foo', 'bar')
   t.is(mock.foo(), 'bar')
   t.true(mock.verify())
 })
 
-test('verify throws if expected not matched', (t) => {
+test('verify throws if expected not matched', t => {
   const mock = createMock()
   mock.expect('foo', 'bar')
-  t.throws(() => { mock.verify() }, MockVerificationError)
+  t.throws(
+    () => {
+      mock.verify()
+    },
+    { instanceOf: MockVerificationError }
+  )
 })
 
-test('reset is no-op if nothing called and expected', (t) => {
+test('reset is no-op if nothing called and expected', t => {
   const mock = createMock()
   mock.reset()
 
   t.pass('no unexpected errors')
 })
 
-test('reset removes expectations', (t) => {
+test('reset removes expectations', t => {
   const mock = createMock()
   mock.expect('foo', 'bar')
   mock.reset()
 
   t.true(mock.verify())
-  t.throws(() => { mock.foo() }, ArgumentError)
+  t.throws(
+    () => {
+      mock.foo()
+    },
+    { instanceOf: ArgumentError }
+  )
 })
 
-test('verify is no-op if nothing called and expected', (t) => {
+test('verify is no-op if nothing called and expected', t => {
   const mock = createMock()
   t.true(mock.verify())
 })
 
-test('enforces arg or block', (t) => {
+test('enforces arg or block', t => {
   const mock = createMock()
-  t.throws(() => { mock.expect('foo', undefined, ['bar'], () => false) }, ArgumentError)
-  // @ts-ignore
-  t.throws(() => { mock.expect('foo', undefined, 'bar') }, ArgumentError)
+  t.throws(
+    () => {
+      mock.expect('foo', undefined, ['bar'], () => false)
+    },
+    { instanceOf: ArgumentError }
+  )
+
+  t.throws(
+    () => {
+      mock.expect('foo', undefined, 'bar')
+    },
+    { instanceOf: ArgumentError }
+  )
 })
 
-test('README.md sample', (t) => {
+test('README.md sample', t => {
   const mock = createMock()
 
   mock.expect('name', 'first')
   mock.expect('name', 'second')
   mock.expect('callme', 42, ['maybe'])
-  mock.expect('complicated', 'uhuh', [], (life, is) => life === 'like' && is !== 'this')
+  mock.expect(
+    'complicated',
+    'uhuh',
+    [],
+    (life, is) => life === 'like' && is !== 'this'
+  )
 
   t.is(mock.name(), 'first')
   t.is(mock.name(), 'second')
@@ -132,11 +178,26 @@ test('README.md sample', (t) => {
   t.is(mock.complicated('like', 'that'), 'uhuh')
   t.true(mock.verify())
 
-  t.throws(() => { mock.name() }, MockVerificationError)
+  t.throws(
+    () => {
+      mock.name()
+    },
+    { instanceOf: MockVerificationError }
+  )
 
   mock.expect('callme', 42, ['maybe'])
-  t.throws(() => { mock.callme('foo') }, MockVerificationError)
-  t.throws(() => { mock.verify() }, MockVerificationError)
+  t.throws(
+    () => {
+      mock.callme('foo')
+    },
+    { instanceOf: MockVerificationError }
+  )
+  t.throws(
+    () => {
+      mock.verify()
+    },
+    { instanceOf: MockVerificationError }
+  )
 
   mock.reset()
   t.true(mock.verify())
