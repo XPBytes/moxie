@@ -1,6 +1,6 @@
 # Moxie
 
-[![Build Status](https://travis-ci.com/XPBytes/moxie.svg?branch=master)](https://travis-ci.com/XPBytes/moxie) [![NPM Package Version](https://badge.fury.io/js/@xpbytes%2Fmoxie.svg)](https://npmjs.org/package/@xpbytes/moxie) [![Maintainability](https://api.codeclimate.com/v1/badges/935646b9f014b9f9a983/maintainability)](https://codeclimate.com/github/XPBytes/moxie/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/935646b9f014b9f9a983/test_coverage)](https://codeclimate.com/github/XPBytes/moxie/test_coverage)
+[![npm](https://github.com/XPBytes/moxie/workflows/npm/badge.svg)](https://github.com/XPBytes/moxie/actions?query=workflow%3Anpm) [![NPM Package Version](https://badge.fury.io/js/@xpbytes%2Fmoxie.svg)](https://npmjs.org/package/@xpbytes/moxie) [![Maintainability](https://api.codeclimate.com/v1/badges/935646b9f014b9f9a983/maintainability)](https://codeclimate.com/github/XPBytes/moxie/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/935646b9f014b9f9a983/test_coverage)](https://codeclimate.com/github/XPBytes/moxie/test_coverage)
 
 Proxy implementation of a mock, based on `minitest/mock.rb`.
 
