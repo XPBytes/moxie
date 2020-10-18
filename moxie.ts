@@ -81,25 +81,23 @@ class Mock {
    * @returns {true} returns if verified, throws otherwise
    */
   public verify(): true {
-    Object.keys(this.expectedCalls).forEach(
-      (name): void => {
-        const expected = this.expectedCalls[name]
-        const actual = this.actualCalls[name]
-        if (!actual) {
-          throw new MockVerificationError(
-            `expected ${this.__print_call(name, expected[0])}`
-          )
-        }
-        if (actual.length < expected.length) {
-          throw new MockVerificationError(
-            `expected ${this.__print_call(
-              name,
-              expected[actual.length]
-            )}, got [${this.__print_call(name, actual)}]`
-          )
-        }
+    Object.keys(this.expectedCalls).forEach((name): void => {
+      const expected = this.expectedCalls[name]
+      const actual = this.actualCalls[name]
+      if (!actual) {
+        throw new MockVerificationError(
+          `expected ${this.__print_call(name, expected[0])}`
+        )
       }
-    )
+      if (actual.length < expected.length) {
+        throw new MockVerificationError(
+          `expected ${this.__print_call(
+            name,
+            expected[actual.length]
+          )}, got [${this.__print_call(name, actual)}]`
+        )
+      }
+    })
 
     return true
   }
@@ -206,15 +204,14 @@ class Mock {
 
     if (expectedArgs.length !== actualArgs.length) {
       throw new MockVerificationError(
-        `mocked method ${name} expects ${expectedArgs.length}, got ${
-          actualArgs.length
-        }`
+        `mocked method ${name} expects ${expectedArgs.length}, got ${actualArgs.length}`
       )
     }
 
-    const zippedArgs = expectedArgs.map(
-      (arg, i): [unknown, unknown] => [arg, actualArgs[i]]
-    ) as [unknown, unknown][]
+    const zippedArgs = expectedArgs.map((arg, i): [unknown, unknown] => [
+      arg,
+      actualArgs[i]
+    ]) as [unknown, unknown][]
     // Intentional == to coerce
     // TODO: allow for === case equailty style matching later
     const fullyMatched = zippedArgs.every(this.__compare)
