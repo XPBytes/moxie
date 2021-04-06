@@ -9,7 +9,7 @@ yarn add @xpbytes/moxie
 ```
 
 ```javascript
-import createMock from '@xpbytes/movie'
+import createMock from '@xpbytes/moxie'
 
 const mock = createMock()
 
